@@ -12,6 +12,24 @@ A browser word game (Scrabble-style crossword duel) with German dictionary valid
 - `dict/basis.txt` — bundled German word list (~54k common forms), fetched at runtime
 - `.nojekyll` — tells GitHub Pages to serve files as-is
 
+## Rules & word validation
+
+- First word must cover the center star (✦); every later word must connect to
+  the board with no gaps. Minimum word length is 2 letters (no upper bound).
+  Playing all 7 tiles in a single move earns a configurable bonus
+  (`bingoBonus`, default 50).
+- Every move is checked against **all** words it forms, not just the one the
+  player intended: the main word in the direction it was played, *and* every
+  crossing (perpendicular) word each newly placed tile creates. The move is
+  only accepted if every one of those words validates.
+- Nothing is invented — see "Word-list credits" below for the two source
+  lists. The large auto-expanded runtime list (~685k forms) is not curated
+  for Scrabble-style play: it trades curation for coverage, so it does
+  contain some abbreviations and unusual short forms (e.g. "AA", "ND") that
+  are technically valid dictionary entries but don't read like "real" words.
+- In-game, the same information is available from the "Regeln"/"Rules"
+  button on the main menu, or the "?" button next to "Menü" during a match.
+
 ## Runtime network dependencies (all optional-ish)
 
 - **Google Fonts** (Alegreya / Alegreya Sans) — cosmetic fallback if offline
