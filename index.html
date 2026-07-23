@@ -186,10 +186,12 @@
         <sc-if value="{{ notExch }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex; flex-direction:column; gap:8px;">
             <button onClick="{{ onSubmit }}" disabled="{{ submitDisabled }}" style="width:100%; background:{{ submitBg }}; border:none; border-radius:10px; color:#33230f; padding:13px; font:inherit; font-size:16.5px; font-weight:700; cursor:pointer; box-shadow:0 5px 14px rgba(0,0,0,.3); letter-spacing:.02em;" style-hover="filter:brightness(1.06)">{{ t.submit }}</button>
-            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:7px;">
+            <div style="display:grid; grid-template-columns:{{ actionGridCols }}; gap:7px;">
               <button onClick="{{ onPass }}" disabled="{{ actionsDisabled }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:{{ passColor }}; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ passLabel }}</button>
               <button onClick="{{ onExchange }}" disabled="{{ exchDisabled }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#cdb992; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ t.exchange }}</button>
-              <button onClick="{{ onHint }}" disabled="{{ actionsDisabled }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#e0b05c; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ t.hint }}</button>
+              <sc-if value="{{ hintVisible }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ onHint }}" disabled="{{ actionsDisabled }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#e0b05c; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ t.hint }}</button>
+              </sc-if>
               <button onClick="{{ onShuffle }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#cdb992; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ t.shuffle }}</button>
               <button onClick="{{ onRecall }}" disabled="{{ recallDisabled }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#cdb992; padding:9px 2px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">{{ t.recall }}</button>
             </div>
@@ -958,6 +960,7 @@ class Component extends DCLogic {
       submitDisabled: !myTurn || !s.pending.length,
       submitBg: (!myTurn || !s.pending.length) ? 'linear-gradient(180deg,#8a7248,#75603a)' : 'linear-gradient(180deg,#d9a84e,#b9852f)',
       actionsDisabled: !myTurn, exchDisabled: !myTurn || s.bag.length < 7,
+      hintVisible: s.mode === 'cpu', actionGridCols: s.mode === 'cpu' ? 'repeat(5,1fr)' : 'repeat(4,1fr)',
       recallDisabled: !myTurn || !s.pending.length,
       passLabel: s.passArm ? t.sure : t.pass, passColor: s.passArm ? '#e89a86' : '#cdb992',
       onPass: () => this.passTurn(), onExchange: () => this.exchangeToggle(), onHint: () => this.hintMove(),
