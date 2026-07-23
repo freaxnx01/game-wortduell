@@ -46,6 +46,7 @@
         <input value="{{ nameP2 }}" onChange="{{ onNameP2 }}" placeholder="{{ t.ph2 }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#f0e6d2; padding:9px 12px; font:inherit; font-size:15px; width:150px;">
         <button onClick="{{ onToggleLang }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#e0b05c; padding:9px 14px; font:inherit; font-size:14px; font-weight:700; cursor:pointer;">{{ langLabel }}</button>
         <button onClick="{{ onToggleSound }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#e0b05c; padding:9px 14px; font:inherit; font-size:14px; font-weight:700; cursor:pointer;">{{ soundLabel }}</button>
+        <button onClick="{{ onOpenRules }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#e0b05c; padding:9px 14px; font:inherit; font-size:14px; font-weight:700; cursor:pointer;">{{ t.rulesBtn }}</button>
       </div>
 
       <sc-if value="{{ hasSave }}" hint-placeholder-val="{{ false }}">
@@ -145,6 +146,7 @@
           <div style="flex:1;"></div>
           <button onClick="{{ onToggleLang }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:7px; color:#e0b05c; padding:6px 10px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;">{{ langLabel }}</button>
           <button onClick="{{ onToggleSound }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:7px; color:#e0b05c; padding:6px 10px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;">{{ soundLabel }}</button>
+          <button onClick="{{ onOpenRules }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:7px; color:#e0b05c; padding:6px 10px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="border-color:#8a6a42">?</button>
           <button onClick="{{ onLeaveGame }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:7px; color:#cdb992; padding:6px 10px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;" style-hover="color:#f0e6d2">{{ t.menuBtn }}</button>
         </div>
 
@@ -264,6 +266,31 @@
       </div>
     </div>
   </sc-if>
+
+  <sc-if value="{{ showRules }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:80; background:rgba(28,18,10,.74); backdrop-filter:blur(14px); display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;" onClick="{{ onCloseRules }}">
+      <div style="background:linear-gradient(180deg,#4a3520,#3a2917); border-radius:18px; padding:26px 28px; max-width:560px; width:92vw; max-height:82vh; overflow-y:auto; box-sizing:border-box; box-shadow:0 24px 60px rgba(0,0,0,.6);" onClick="{{ onStopProp }}">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <div style="font-family:Alegreya,serif; font-weight:800; font-size:26px; color:#f3ead6;">{{ t.rulesTitle }}</div>
+          <button onClick="{{ onCloseRules }}" style="background:rgba(0,0,0,.28); border:1px solid #6b4f33; border-radius:8px; color:#cdb992; padding:7px 14px; font:inherit; font-size:13px; cursor:pointer;" style-hover="color:#f0e6d2">{{ t.close }}</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <div style="font-weight:700; font-size:15.5px; color:#e0b05c; margin-bottom:5px;">{{ t.rulesHowToT }}</div>
+            <div style="font-size:14px; line-height:1.55; color:#e6dcc4;">{{ rulesHowToBody }}</div>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:15.5px; color:#e0b05c; margin-bottom:5px;">{{ t.rulesValidT }}</div>
+            <div style="font-size:14px; line-height:1.55; color:#e6dcc4;">{{ t.rulesValidBody }}</div>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:15.5px; color:#e0b05c; margin-bottom:5px;">{{ t.rulesDictT }}</div>
+            <div style="font-size:14px; line-height:1.55; color:#e6dcc4;">{{ t.rulesDictBody }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;bingoBonus&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:50,&quot;min&quot;:0,&quot;max&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Regeln&quot;},&quot;showPremiumLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Brett&quot;},&quot;useFullDictionary&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Wörterbuch&quot;}}">
@@ -274,7 +301,7 @@ class Component extends DCLogic {
     board: Array(225).fill(null), racks: [[], []], bag: [], scores: [0, 0], current: 0, starter: 0,
     pending: [], selRack: null, exch: false, exchSel: [],
     log: [], passes: 0, over: false, overInfo: null, lastMove: [],
-    handover: false, blankPick: null, hint: null, thinking: false, passArm: false, shake: false,
+    handover: false, blankPick: null, hint: null, thinking: false, passArm: false, shake: false, showRules: false,
     dictN: 0, fullState: 'idle', toast: null,
     p2pRole: null, p2pCode: '', p2pStatus: '', joinCode: '', hasSave: false, netBusy: false
   };
@@ -303,7 +330,14 @@ class Component extends DCLogic {
       reasonOut: '{name} hat alle Steine gelegt.', reasonPass: 'Sechs Züge ohne Punkte.',
       dictBase: 'Wörterbuch: {n} Wörter', dictLoading: 'Wörterbuch: {n} Wörter · erweitere …', dictFull: 'Großes Wörterbuch aktiv: {n} Wörter', dictErr: 'Wörterbuch: {n} Wörter (Erweiterung offline)',
       dictOff: 'Wörterbuch noch nicht geladen — Prüfung übersprungen.', blankPick: 'Blanko-Stein: Buchstaben wählen',
-      sound: 'Ton an', soundOff: 'Ton aus', lblDL: '2·B', lblTL: '3·B', lblDW: '2·W', lblTW: '3·W'
+      sound: 'Ton an', soundOff: 'Ton aus', lblDL: '2·B', lblTL: '3·B', lblDW: '2·W', lblTW: '3·W',
+      rulesBtn: 'Regeln', rulesTitle: 'Regeln', close: 'Schließen',
+      rulesHowToT: 'So wird gespielt',
+      rulesHowToBody: 'Das erste Wort muss das Sternfeld (✦) in der Mitte bedecken. Jedes weitere Wort muss an ein bereits liegendes Wort anschließen — Lücken sind nicht erlaubt. Ein Wort braucht mindestens zwei Buchstaben. Wer alle 7 Steine auf einmal legt, bekommt einen Bonus von {n} Punkten. 2·B/3·B verdoppeln bzw. verdreifachen den Buchstabenwert, 2·W/3·W den Wortwert — jedes Feld zählt nur beim ersten Belegen.',
+      rulesValidT: 'Wortprüfung',
+      rulesValidBody: 'Bei jedem Zug werden alle neu entstehenden Wörter geprüft — das Hauptwort in Legerichtung UND jedes einzelne Wort, das quer dazu durch die neuen Steine entsteht. Nur wenn wirklich jedes dieser Wörter im Wörterbuch steht, wird der Zug akzeptiert. Kurze Wörter mit zwei Buchstaben sind ausdrücklich erlaubt.',
+      rulesDictT: 'Wörterbuch-Quelle',
+      rulesDictBody: 'Kein Wort wird erfunden. Die Basisliste (~54.000 Formen) stammt aus Frequenzlisten von OpenSubtitles sowie der German-Words-Library (Jonny-exe). Beim Start wird zusätzlich automatisch eine große Liste (~685.000 Formen, hippler/german-wordlist, bekannt aus dem Wortspiel Tanglet) nachgeladen. Diese große Liste ist nicht für Scrabble-artige Spiele kuratiert — sie deckt viel ab, aber sie enthält auch Abkürzungen und ungewöhnliche Kurzformen (z. B. „AA“, „ND“), die technisch gültig sind, aber selten wie „echte“ Wörter wirken.'
     },
     en: {
       subtitle: 'The German crossword duel', ph1: 'Player 1 name', ph2: 'Player 2 name',
@@ -326,7 +360,14 @@ class Component extends DCLogic {
       reasonOut: '{name} played all tiles.', reasonPass: 'Six scoreless turns.',
       dictBase: 'Dictionary: {n} words', dictLoading: 'Dictionary: {n} words · expanding …', dictFull: 'Full dictionary active: {n} words', dictErr: 'Dictionary: {n} words (expansion offline)',
       dictOff: 'Dictionary not loaded yet — check skipped.', blankPick: 'Blank tile: choose a letter',
-      sound: 'Sound on', soundOff: 'Muted', lblDL: 'DL', lblTL: 'TL', lblDW: 'DW', lblTW: 'TW'
+      sound: 'Sound on', soundOff: 'Muted', lblDL: 'DL', lblTL: 'TL', lblDW: 'DW', lblTW: 'TW',
+      rulesBtn: 'Rules', rulesTitle: 'Rules', close: 'Close',
+      rulesHowToT: 'How to play',
+      rulesHowToBody: 'The first word must cover the star square (✦) in the center. Every following word must connect to a word already on the board — no gaps allowed. A word needs at least two letters. Playing all 7 tiles in one move earns a {n}-point bonus. 2·B/3·B double or triple a letter’s value, 2·W/3·W double or triple the whole word’s value — each square only counts the first time it’s covered.',
+      rulesValidT: 'Word validation',
+      rulesValidBody: 'Every move checks all words it newly forms — the main word in the direction it was played AND every single word formed crosswise through the new tiles. The move is only accepted if every one of those words is in the dictionary. Short, two-letter words are explicitly allowed.',
+      rulesDictT: 'Dictionary source',
+      rulesDictBody: 'Nothing is invented. The base list (~54k forms) comes from OpenSubtitles frequency lists and the German-Words-Library (Jonny-exe). On startup, a large list (~685k forms, hippler/german-wordlist, used by the word game Tanglet) is streamed in automatically. That large list isn’t curated for Scrabble-style play — it covers a lot, but also includes abbreviations and unusual short forms (e.g. “AA”, “ND”) that are technically valid but rarely feel like “real” words.'
     }
   };
   fmt(s, map) { let o = s; for (const k in map) o = o.split('{' + k + '}').join(map[k]); return o; }
@@ -990,7 +1031,12 @@ class Component extends DCLogic {
       overWinner: oi ? (oi.winner === -1 ? t.tie : this.fmt(t.winner, { name: s.names[oi.winner] })) : '',
       overRows, onRematch: () => this.rematch(),
       onLeaveGame: () => this.leaveGame(),
-      onToMenu: () => this.leaveGame()
+      onToMenu: () => this.leaveGame(),
+      showRules: s.showRules,
+      onOpenRules: () => this.setState({ showRules: true }),
+      onCloseRules: () => this.setState({ showRules: false }),
+      onStopProp: e => e.stopPropagation(),
+      rulesHowToBody: this.fmt(t.rulesHowToBody, { n: bb })
     };
   }
 }
