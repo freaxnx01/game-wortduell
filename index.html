@@ -204,7 +204,11 @@
             <sc-for list="{{ logRows }}" as="lr" hint-placeholder-count="2">
               <div style="display:flex; gap:8px; font-size:13.5px; align-items:baseline;">
                 <span style="color:#a8946f; white-space:nowrap;">{{ lr.who }}</span>
-                <span style="color:#e6dcc4; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ lr.txt }}</span>
+                <span style="color:#e6dcc4; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  <sc-for list="{{ lr.words }}" as="w" hint-placeholder-count="8">
+                    {{ w.prefix }}<sc-if value="{{ w.href }}" hint-placeholder-val="{{ false }}"><a href="{{ w.href }}" target="_blank" rel="noopener" style="color:#e6dcc4; text-decoration:underline dotted;" style-hover="color:#f0c97e">{{ w.str }}</a></sc-if><sc-if value="{{ !w.href }}" hint-placeholder-val="{{ true }}"><span>{{ w.str }}</span></sc-if>
+                  </sc-for>
+                </span>
                 <span style="color:#d9a84e; font-weight:700; white-space:nowrap;">{{ lr.pts }}</span>
               </div>
             </sc-for>
@@ -570,7 +574,7 @@ class Component extends DCLogic {
     const bb = this.props.bingoBonus ?? 50;
     const gained = r.total + (r.bingo ? bb : 0);
     const scores = [...s.scores]; scores[player] += gained;
-    const log = [{ k: this.uid++, who: s.names[player], txt: r.words.map(w => w.str).join(' · '), pts: '+' + gained }, ...s.log];
+    const log = [{ k: this.uid++, who: s.names[player], words: r.words.map(w => w.str), real: true, pts: '+' + gained }, ...s.log];
     this.setState({ board, racks, bag, scores, log, lastMove: pl.map(p => p.i), pending: [], selRack: null, hint: null, passes: 0 }, () => {
       if (r.bingo) { this.snd('bingo'); this.toast(this.fmt(t.bingoTxt, { n: bb }), 'ok'); } else this.snd('ok');
       if (rk.length === 0 && bag.length === 0) this.finish('out', player);
@@ -593,7 +597,7 @@ class Component extends DCLogic {
   }
   doPass(player) {
     const s = this.state, t = this.t();
-    const log = [{ k: this.uid++, who: s.names[player], txt: t.passedTxt, pts: '' }, ...s.log];
+    const log = [{ k: this.uid++, who: s.names[player], words: [t.passedTxt], real: false, pts: '' }, ...s.log];
     this.setState({ log, passes: s.passes + 1, pending: [], selRack: null, passArm: false }, () => {
       if (this.state.passes >= 6) this.finish('passes'); else this.advance();
     });
@@ -617,7 +621,7 @@ class Component extends DCLogic {
     ids.forEach(id => { const ix = rk.findIndex(tl => tl.id === id); if (ix >= 0) removed.push(rk.splice(ix, 1)[0]); });
     for (let i = 0; i < removed.length && bag.length; i++) rk.push(bag.pop());
     removed.forEach(tl => bag.push(tl)); this.shuffleArr(bag);
-    const log = [{ k: this.uid++, who: s.names[player], txt: this.fmt(t.exchangedTxt, { n: removed.length }), pts: '' }, ...s.log];
+    const log = [{ k: this.uid++, who: s.names[player], words: [this.fmt(t.exchangedTxt, { n: removed.length })], real: false, pts: '' }, ...s.log];
     this.setState({ racks, bag, log, passes: s.passes + 1, exch: false, exchSel: [] }, () => {
       this.snd('click');
       if (this.state.passes >= 6) this.finish('passes'); else this.advance();
@@ -785,7 +789,7 @@ class Component extends DCLogic {
         const tile = ix >= 0 ? rk.splice(ix, 1)[0] : null;
         pend.push({ i: p.i, tid: tile ? tile.id : null, letter: p.letter, value: p.value, blank: p.blank });
       }
-      const log = [{ k: this.uid++, who: this.state.names[rackIdx], txt: t.hintTxt, pts: '' }, ...this.state.log];
+      const log = [{ k: this.uid++, who: this.state.names[rackIdx], words: [t.hintTxt], real: false, pts: '' }, ...this.state.log];
       this.setState({ thinking: false, hintBusy: false, pending: pend, hint: { cells: pend.map(p => p.i), word: m.word, score: m.total }, log });
       this.snd('place');
     }), 30);
@@ -965,7 +969,15 @@ class Component extends DCLogic {
       passLabel: s.passArm ? t.sure : t.pass, passColor: s.passArm ? '#e89a86' : '#cdb992',
       onPass: () => this.passTurn(), onExchange: () => this.exchangeToggle(), onHint: () => this.hintMove(),
       onShuffle: () => this.shuffleRack(), onRecall: () => this.recall(),
-      logRows: s.log.slice(0, 40).map(l => ({ who: l.who, txt: l.txt, pts: l.pts })),
+      logRows: s.log.slice(0, 40).map(l => ({
+        who: l.who,
+        words: l.words.map((str, i) => ({
+          str,
+          prefix: i === 0 ? '' : ' · ',
+          href: l.real ? 'https://www.google.com/search?q=' + encodeURIComponent(str) : null
+        })),
+        pts: l.pts
+      })),
       dictLine,
       showHandover: s.handover && s.screen === 'game' && !s.over,
       handoverName: s.names[s.current] || '', handoverBtn: this.fmt(t.ready, { name: s.names[s.current] || '' }),
