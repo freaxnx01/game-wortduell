@@ -1012,7 +1012,7 @@ class Component extends DCLogic {
       onShuffle: () => this.shuffleRack(), onRecall: () => this.recall(),
       logRows: s.log.slice(0, 40).map(l => ({
         who: l.who,
-        words: l.words.map((str, i) => ({
+        words: (l.words || (l.txt != null ? [l.txt] : [])).map((str, i) => ({
           str,
           prefix: i === 0 ? '' : ' · ',
           href: l.real ? 'https://www.google.com/search?q=' + encodeURIComponent(str) : null
