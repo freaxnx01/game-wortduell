@@ -337,7 +337,7 @@ class Component extends DCLogic {
       rulesValidT: 'Wortprüfung',
       rulesValidBody: 'Bei jedem Zug werden alle neu entstehenden Wörter geprüft — das Hauptwort in Legerichtung UND jedes einzelne Wort, das quer dazu durch die neuen Steine entsteht. Nur wenn wirklich jedes dieser Wörter im Wörterbuch steht, wird der Zug akzeptiert. Kurze Wörter mit zwei Buchstaben sind ausdrücklich erlaubt.',
       rulesDictT: 'Wörterbuch-Quelle',
-      rulesDictBody: 'Kein Wort wird erfunden. Die Basisliste (~54.000 Formen) stammt aus Frequenzlisten von OpenSubtitles sowie der German-Words-Library (Jonny-exe). Beim Start wird zusätzlich automatisch eine große Liste (~685.000 Formen, hippler/german-wordlist, bekannt aus dem Wortspiel Tanglet) nachgeladen. Diese große Liste ist nicht für Scrabble-artige Spiele kuratiert — sie deckt viel ab, aber sie enthält auch Abkürzungen und ungewöhnliche Kurzformen (z. B. „AA“, „ND“), die technisch gültig sind, aber selten wie „echte“ Wörter wirken.'
+      rulesDictBody: 'Kein Wort wird erfunden. Die Basisliste (~54.000 Formen) stammt aus Frequenzlisten von OpenSubtitles sowie der German-Words-Library (Jonny-exe). Beim Start wird zusätzlich automatisch eine große Liste (~685.000 Formen, hippler/german-wordlist, bekannt aus dem Wortspiel Tanglet) nachgeladen. Keine der beiden Listen ist eigens für Scrabble kuratiert. Die Zweibuchstaben-Einträge der Basisliste wurden gegen die offizielle deutsche Scrabble-Zweibuchstabenliste geprüft und ungültige (meist Abkürzungen) entfernt; ab drei Buchstaben können in beiden Listen noch einzelne Abkürzungen oder ungewöhnliche Kurzformen (z. B. „BAE“, „DIG“) auftauchen, die technisch gültig sind, aber selten wie „echte“ Wörter wirken.'
     },
     en: {
       subtitle: 'The German crossword duel', ph1: 'Player 1 name', ph2: 'Player 2 name',
@@ -367,7 +367,7 @@ class Component extends DCLogic {
       rulesValidT: 'Word validation',
       rulesValidBody: 'Every move checks all words it newly forms — the main word in the direction it was played AND every single word formed crosswise through the new tiles. The move is only accepted if every one of those words is in the dictionary. Short, two-letter words are explicitly allowed.',
       rulesDictT: 'Dictionary source',
-      rulesDictBody: 'Nothing is invented. The base list (~54k forms) comes from OpenSubtitles frequency lists and the German-Words-Library (Jonny-exe). On startup, a large list (~685k forms, hippler/german-wordlist, used by the word game Tanglet) is streamed in automatically. That large list isn’t curated for Scrabble-style play — it covers a lot, but also includes abbreviations and unusual short forms (e.g. “AA”, “ND”) that are technically valid but rarely feel like “real” words.'
+      rulesDictBody: 'Nothing is invented. The base list (~54k forms) comes from OpenSubtitles frequency lists and the German-Words-Library (Jonny-exe). On startup, a large list (~685k forms, hippler/german-wordlist, used by the word game Tanglet) is streamed in automatically. Neither list is curated specifically for Scrabble. The base list’s two-letter entries were checked against the official German Scrabble two-letter word list and invalid ones (mostly abbreviations) removed; at three letters and up, both lists can still contain the odd abbreviation or unusual short form (e.g. “BAE”, “DIG”) that’s technically valid but rarely feels like a “real” word.'
     }
   };
   fmt(s, map) { let o = s; for (const k in map) o = o.split('{' + k + '}').join(map[k]); return o; }

@@ -23,10 +23,13 @@ A browser word game (Scrabble-style crossword duel) with German dictionary valid
   crossing (perpendicular) word each newly placed tile creates. The move is
   only accepted if every one of those words validates.
 - Nothing is invented — see "Word-list credits" below for the two source
-  lists. The large auto-expanded runtime list (~685k forms) is not curated
-  for Scrabble-style play: it trades curation for coverage, so it does
-  contain some abbreviations and unusual short forms (e.g. "AA", "ND") that
-  are technically valid dictionary entries but don't read like "real" words.
+  lists. Neither is curated specifically for Scrabble play. The bundled base
+  list's two-letter entries were checked against the official German Scrabble
+  two-letter word list and invalid ones (mostly abbreviations) removed; at
+  three letters and up, both the base list and the large auto-expanded
+  runtime list (~685k forms) can still contain the odd abbreviation or
+  unusual short form (e.g. "BAE", "DIG") that's technically a valid
+  dictionary entry but doesn't read like a "real" word.
 - In-game, the same information is available from the "Regeln"/"Rules"
   button on the main menu, or the "?" button next to "Menü" during a match.
 
