@@ -8,6 +8,7 @@
 </head>
 <body>
 <script src="./version.js"></script>
+<script src="./i18n.js"></script>
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -293,6 +294,36 @@
     </div>
   </sc-if>
 </div>
+<!-- game-nav: copy-paste template. Replace the repo placeholder with the target
+     repo name (e.g. game-stack-duel) before pasting into a game's index.html,
+     just before </body>. See docs/superpowers/specs/2026-07-13-game-card-feedback-star-design.md
+     for design rationale. -->
+<nav id="game-nav" aria-label="Game navigation" style="position:fixed;right:10px;bottom:8px;z-index:2147483647;display:flex;gap:12px;align-items:center;font:600 13px/1.4 system-ui,-apple-system,sans-serif;padding:6px 11px;border-radius:8px;background:rgba(15,17,26,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:.55;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.55">
+  <span id="version-badge" title="Version" style="color:#5a6072"></span>
+  <span style="color:#5a6072" aria-hidden="true">·</span>
+  <a href="https://github.freaxnx01.ch/games/" style="color:#8fd8e8;text-decoration:none">More Games…</a>
+  <span style="color:#5a6072" aria-hidden="true">·</span>
+  <a href="https://github.com/freaxnx01/game-wortduell" target="_blank" rel="noopener" style="color:#8fd8e8;text-decoration:none">Source</a>
+  <span style="color:#5a6072" aria-hidden="true">·</span>
+  <a href="https://github.com/freaxnx01/game-wortduell/issues/new?title=%5BFeedback%5D%20game-wortduell&labels=feedback" target="_blank" rel="noopener" style="color:#8fd8e8;text-decoration:none">Feedback</a>
+  <span style="color:#5a6072" aria-hidden="true">·</span>
+  <button id="gg-lang-toggle" type="button" title="Switch language" style="background:none;border:none;padding:0;margin:0;font:inherit;color:#8fd8e8;cursor:pointer">EN/DE</button>
+  <span style="color:#5a6072" aria-hidden="true">·</span>
+  <a class="github-button" href="https://github.com/freaxnx01/game-wortduell" data-icon="octicon-star" data-size="small" data-show-count="true" aria-label="Star freaxnx01/game-wortduell on GitHub">Star</a>
+</nav>
+<script>
+  (function () {
+    var el = document.getElementById('version-badge');
+    if (!el) return;
+    var a = document.createElement('a');
+    a.href = 'https://github.com/freaxnx01/game-wortduell/blob/main/CHANGELOG.md';
+    a.target = '_blank'; a.rel = 'noopener'; a.title = 'Changelog';
+    a.textContent = 'v' + (window.GAME_VERSION || '0.0.0');
+    a.style.color = 'inherit'; a.style.textDecoration = 'none';
+    el.appendChild(a);
+  })();
+</script>
+<script async defer crossorigin="anonymous" src="https://buttons.github.io/buttons.js"></script>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;bingoBonus&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:50,&quot;min&quot;:0,&quot;max&quot;:100,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Regeln&quot;},&quot;showPremiumLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Brett&quot;},&quot;useFullDictionary&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Wörterbuch&quot;}}">
 class Component extends DCLogic {
@@ -379,8 +410,9 @@ class Component extends DCLogic {
     for (const tag in q) for (const [r, c] of q[tag]) for (const [rr, cc] of [[r,c],[r,14-c],[14-r,c],[14-r,14-c]]) this.PREM[rr*15+cc] = tag;
     try {
       const p = JSON.parse(localStorage.getItem('wortduell-prefs') || '{}');
-      this.setState({ lang: p.lang || 'de', sound: p.sound !== false, nameP1: p.n1 || '', nameP2: p.n2 || '', diff: p.diff || 'mittel', hasSave: !!localStorage.getItem('wortduell-save') });
+      this.setState({ lang: window.GG_LANG, sound: p.sound !== false, nameP1: p.n1 || '', nameP2: p.n2 || '', diff: p.diff || 'mittel', hasSave: !!localStorage.getItem('wortduell-save') });
     } catch (e) {}
+    window.addEventListener('gg-langchange', () => this.setState({ lang: window.GG_LANG }));
     fetch('dict/basis.txt').then(r => r.text()).then(t => {
       for (const w of t.split('\n')) if (w) this.dict.add(w.trim());
       this.mapDirty = true; this.setState({ dictN: this.dict.size });
@@ -424,7 +456,7 @@ class Component extends DCLogic {
   t() { return this.T[this.state.lang]; }
   savePrefs(patch) {
     const s = { ...this.state, ...patch };
-    try { localStorage.setItem('wortduell-prefs', JSON.stringify({ lang: s.lang, sound: s.sound, n1: s.nameP1, n2: s.nameP2, diff: s.diff })); } catch (e) {}
+    try { localStorage.setItem('wortduell-prefs', JSON.stringify({ sound: s.sound, n1: s.nameP1, n2: s.nameP2, diff: s.diff })); } catch (e) {}
   }
   toast(msg, kind) {
     clearTimeout(this._tt);
@@ -981,7 +1013,7 @@ class Component extends DCLogic {
       onNameP1: e => { this.setState({ nameP1: e.target.value }); this.savePrefs({ nameP1: e.target.value }); },
       onNameP2: e => { this.setState({ nameP2: e.target.value }); this.savePrefs({ nameP2: e.target.value }); },
       langLabel: s.lang === 'de' ? 'DE → EN' : 'EN → DE',
-      onToggleLang: () => { const lang = s.lang === 'de' ? 'en' : 'de'; this.setState({ lang }); this.savePrefs({ lang }); },
+      onToggleLang: () => window.ggSetLang(s.lang === 'de' ? 'en' : 'de'),
       soundLabel: s.sound ? t.sound : t.soundOff,
       onToggleSound: () => { const sound = !s.sound; this.setState({ sound }); this.savePrefs({ sound }); },
       hasSave: s.hasSave && s.screen === 'menu', onResume: () => this.resume(),
