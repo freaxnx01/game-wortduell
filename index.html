@@ -312,15 +312,23 @@
   <a class="github-button" href="https://github.com/freaxnx01/game-wortduell" data-icon="octicon-star" data-size="small" data-show-count="true" aria-label="Star freaxnx01/game-wortduell on GitHub">Star</a>
 </nav>
 <script>
+  // Version badge → CHANGELOG. Text comes only from window.GAME_VERSION so
+  // version.js stays the single source. The dc runtime re-renders #game-nav
+  // from its template (an empty span) after load and on every state change,
+  // so the link is put back whenever it is missing.
   (function () {
-    var el = document.getElementById('version-badge');
-    if (!el) return;
-    var a = document.createElement('a');
-    a.href = 'https://github.com/freaxnx01/game-wortduell/blob/main/CHANGELOG.md';
-    a.target = '_blank'; a.rel = 'noopener'; a.title = 'Changelog';
-    a.textContent = 'v' + (window.GAME_VERSION || '0.0.0');
-    a.style.color = 'inherit'; a.style.textDecoration = 'none';
-    el.appendChild(a);
+    function ensure() {
+      var el = document.getElementById('version-badge');
+      if (!el || el.querySelector('a')) return;
+      var a = document.createElement('a');
+      a.href = 'https://github.com/freaxnx01/game-wortduell/blob/main/CHANGELOG.md';
+      a.target = '_blank'; a.rel = 'noopener'; a.title = 'Changelog';
+      a.textContent = 'v' + (window.GAME_VERSION || '0.0.0');
+      a.style.color = 'inherit'; a.style.textDecoration = 'none';
+      el.appendChild(a);
+    }
+    ensure();
+    new MutationObserver(ensure).observe(document.documentElement, { childList: true, subtree: true });
   })();
 </script>
 <script async defer crossorigin="anonymous" src="https://buttons.github.io/buttons.js"></script>
@@ -1073,22 +1081,6 @@ class Component extends DCLogic {
     };
   }
 }
-</script>
-<div id="version-badge" title="Version" style="position:fixed;right:8px;bottom:6px;z-index:2147483647;font:600 11px/1 system-ui,-apple-system,sans-serif;color:#8a8f9c;opacity:.5;pointer-events:none"></div>
-<script>
-  (function () {
-    var el = document.getElementById('version-badge');
-    if (!el) return;
-    var a = document.createElement('a');
-    a.href = 'https://github.com/freaxnx01/game-wortduell/blob/main/CHANGELOG.md';
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.title = 'Changelog';
-    a.textContent = 'v' + (window.GAME_VERSION || '0.0.0');
-    a.style.color = 'inherit';
-    a.style.textDecoration = 'none';
-    el.appendChild(a);
-  })();
 </script>
 <!-- game-nav-fullscreen:start -->
 <script>
